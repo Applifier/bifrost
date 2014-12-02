@@ -11,7 +11,10 @@
             [uswitch.bifrost.async :refer (observable-chan)]
             [metrics.meters :refer (meter mark! defmeter)]
             [metrics.counters :refer (defcounter inc!)])
-  (:import [java.util.zip GZIPOutputStream]))
+  (:import [java.util.zip GZIPOutputStream]
+    [java.io InputStream OutputStream]
+    ))
+
 
 (defn- get-available-topics
   [zookeeper-connect]
@@ -52,6 +55,15 @@
 
 (defmeter baldr-writes "records")
 
+(defn text-writer
+  "Returns a function which takes byte-arrays and writes them to ostream
+  as plain text lines."
+  [^OutputStream ostream]
+  (fn [^bytes payload]
+    (.write ostream ^bytes payload)
+    (.write ostream (byte-array (map byte "\n")))
+    ))
+
 (defn consume-message
   [{:keys [write topic partition meter first-offset] :as state} message]
   (debug "BaldrConsumer" topic "received" (:offset message))
@@ -68,10 +80,10 @@
 
 (defn initialise-file
   [{:keys [topic partition] :as state}]
-  (let [out-file     (doto (java.io.File/createTempFile (str topic "-" partition "-") ".baldr.gz")
+  (let [out-file     (doto (java.io.File/createTempFile (str topic "-" partition "-") ".txt.gz")
                        (.deleteOnExit))
         out-stream   (GZIPOutputStream. (output-stream out-file))
-        write        (baldr-writer out-stream)
+        write        (text-writer out-stream)
         out-path     (.getAbsolutePath out-file)]
     (info "Writing output to" out-path)
     (assoc state

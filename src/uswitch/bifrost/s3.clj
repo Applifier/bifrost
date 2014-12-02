@@ -8,15 +8,21 @@
             [clj-kafka.zk :refer (committed-offset set-offset!)]
             [uswitch.bifrost.util :refer (close-channels)]
             [uswitch.bifrost.async :refer (observable-chan map->Spawner)]
-            [uswitch.bifrost.telemetry :refer (rate-gauge reset-gauge! stop-gauge! update-gauge!)]))
+            [uswitch.bifrost.telemetry :refer (rate-gauge reset-gauge! stop-gauge! update-gauge!)]
+            [clj-time.core :as t]
+            [clj-time.format :as f]))
 
 (def buffer-size 100)
 
+(def custom-formatter (f/formatter "yyyy-MM-dd"))
+
 (defn generate-key [consumer-group-id topic partition first-offset]
-  (format "%s/%s/partition=%s/%s.baldr.gz"
+  (format "%s/%s/%s-p-%s-%s-%s.txt.gz"
           consumer-group-id
           topic
+          topic
           partition
+          (f/unparse custom-formatter (t/now))
           (format "%010d" first-offset)))
 
 (def caching-rate-gauge (memoize rate-gauge))

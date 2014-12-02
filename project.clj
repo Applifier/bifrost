@@ -9,14 +9,14 @@
                  [org.clojure/tools.logging "0.2.6"]
                  [com.stuartsierra/component "0.2.1"]
                  [org.clojure/core.async "0.1.278.0-76b25b-alpha"]
-                 [clj-kafka "0.2.6-0.8" :exclusions [org.slf4j/slf4j-simple]]
+                 [clj-kafka "0.2.8-0.8.1.1" :exclusions [org.slf4j/slf4j-simple]]
                  [riemann-clojure-client "0.2.9"]
                  [baldr "0.1.1"]
                  [org.pingles/clj-aws-s3 "0.3.10"]
                  [metrics-clojure "1.0.1"]
                  [org.xerial.snappy/snappy-java "1.1.0.1"]
                  [org.clojure/tools.cli "0.3.1"]
-
+		 [clj-time "0.8.0"]
                  ;; logging hell
                  [org.slf4j/slf4j-api "1.6.4"]
                  [org.slf4j/log4j-over-slf4j "1.6.4"]]
